@@ -1,0 +1,5 @@
+USE_GPUOCELOT = 1
+
+include $(BUILD_HOME)/build/Options-linux
+
+# vim: set filetype=make : 

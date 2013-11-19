@@ -1,0 +1,60 @@
+#-*-Makefile-*-
+
+# Location of the CUDA Toolkit
+CUDA_PATH ?= "/opt/cuda"
+
+# internal flags
+NVCC        = nvcc
+CC          = gcc
+FORTRAN_CC  = gfortran
+#NVCCFLAGS   := -m32 -arch=sm_20 --compiler-options=-fno-exceptions
+NVCCFLAGS   = -arch=sm_20 --compiler-options=-fno-exceptions -G -g
+CCFLAGS     = -g
+DEFINES     = -DDEBUG
+NVCCLDFLAGS =
+LDFLAGS     += -L$(BUILD_HOME)/lib $(UTILS_LIB) $(ALG_LIB) -lm
+ifeq ($(USE_GPUOCELOT),1)
+LDFLAGS     += -L/opt/cuda/lib -locelot
+else
+LDFLAGS     += -L/usr/lib/nvidia-319 -L/usr/lib/x86_64-linux-gnu -lcudart -lcuda
+endif
+INCPATH     += -I$(BUILD_HOME)/include
+
+################################################################################
+
+# Implicit rules
+%.o : %.c
+	$(CC) -c $(DEFINES) $(INCPATH) $(CCFLAGS) -o $@ $<
+
+%.w.o : %.c
+	$(CC) -c $(DEFINES) $(INCPATH) $(CCFLAGS) -o $@ $<
+
+%.o: %.cu
+	$(NVCC) $(NVCCFLAGS) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
+
+%.o: %.f90
+	$(FORTRAN_CC) $(LDFLAGS) -o $@ $+
+
+################################################################################
+# Lib names
+UTILS_LIB = $(BUILD_HOME)/lib/libutils.a
+ALG_LIB = $(BUILD_HOME)/lib/libalgs.a
+
+################################################################################
+# Build primitives
+
+MAKE        = make -e
+MAKE_LIB    = ar r $@ $^
+LINK_BINARY = $(CC) -o $@ $< $(LDFLAGS)
+
+################################################################################
+# Common targets
+bldall: all
+
+clean:
+	rm -f *.o $(BINS)
+
+clobber: clean
+	rm -f tags TAGS
+
+# vim: set filetype=make : 
