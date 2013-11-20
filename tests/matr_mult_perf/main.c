@@ -7,8 +7,6 @@ int g_sizes[] = {1000, 2000, 3500, 5000};
 
 #define SIZES_COUNT sizeof(g_sizes)/sizeof(g_sizes[0])
 
-/*extern "C" void dgemm_(const char *TRANSA, const char *TRANSB, const int *M, const int *N, const int *K, double *ALPHA, double *A, const int *LDA, double *B, const int *LDB, double *BETA, double *C, const int *LDC);*/
-
 void run_test(int n)
 {
   double *A = (double *)malloc(n*n*sizeof(double));
