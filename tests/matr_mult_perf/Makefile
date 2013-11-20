@@ -9,7 +9,7 @@ all: $(BINS)
 SRCS= main.c
 OBJS= ${SRCS:.c=.o}
 
-LDFLAGS += -lblas
+LDFLAGS += -lblas -lcublas
 
 $(BIN1): $(OBJS)
 	$(LINK_BINARY)
