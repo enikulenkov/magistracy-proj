@@ -37,18 +37,7 @@ Procedures:
 #include  <stdlib.h>  /* Standard C library definitions. */
 #include  <string.h>  /* Standard C string functions. */
 #include  <limits.h>  /* Standard C string functions. */
-#ifdef __palmos__
-#    include  <DateTime.h>  /* PalmOS date/time definitions. */
-#    include  <TimeMgr.h>   /* PalmOS time manager functions. */
-#else
-#    include  <time.h>      /* Time definitions. */
-#endif
-#if defined(VMS)
-#    define  gmtime  localtime    /* VMS/UCX GMTIME() returns NULL. */
-#elif defined(VXWORKS)
-#    include  <timers.h>    /* POSIX timer definitions. */
-#endif
-/*#include  "tv_util.h"      [> "timeval" manipulation functions. <]*/
+#include  <time.h>      /* Time definitions. */
 #include  "ts_util.h"      /* "timespec" manipulation functions. */
 
 /*!*****************************************************************************

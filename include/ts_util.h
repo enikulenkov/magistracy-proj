@@ -15,21 +15,8 @@ extern  "C"  {
 #endif
 
 
-//#include  "tv_util.h"			[> "timeval" manipulation functions. <]
 #include <stdbool.h>
-
-#if defined(VXWORKS)
-#    include  <timers.h>		/* POSIX timer definitions. */
-#elif defined(__hpux)
-#    include  <sys/timers.h>		/* POSIX timer definitions. */
-#elif defined(_POSIX_SOURCE)
-#    include  <sys/time.h>		/* System time definitions. */
-#elif defined(HAVE_TIMESPEC) && !HAVE_TIMESPEC
-    struct  timespec {
-        time_t  tv_sec ;		/* Seconds. */
-        long  tv_nsec ;			/* Nanoseconds. */
-    } ;
-#endif
+#include  <sys/time.h>		/* System time definitions. */
 
 
 /*******************************************************************************
