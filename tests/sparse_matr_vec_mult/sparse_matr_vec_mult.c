@@ -4,15 +4,13 @@
 #include "mat_file_parser.h"
 #include "matr_mult.h"
 
-#define  SPARSE_MATRIX_FILE  "./test1/A_sparse.mat"
-#define  VECTOR_FILE  "./test1/B_vector.mat"
-#define  RES_FILE  "./test1/C_res.mat"
+#define  TEST_FILE  "./test1/full.mat"
 
 #ifdef USE_DENSE_MATRIX
-int load_data(double **A, char *a_file, double **B, char *b_file, double **res, char* res_file)
+int load_data(char *test_file, double **A, double **B, double **res)
 #else
-int load_data(int **A_row_indeces, int **A_col_indeces, double **A_values, int *nnz,
-    char *a_file, double **B, char *b_file, double **res, char* res_file)
+int load_data(char *test_file, int **A_row_indeces, int **A_col_indeces,
+    double **A_values, int *nnz, double **B, double **res)
 #endif
 {
   int ret = 0;
@@ -22,9 +20,9 @@ int load_data(int **A_row_indeces, int **A_col_indeces, double **A_values, int *
 
   mat_file_ctx_t mat_ctx;
 
-  /* Load matrix A */
-  init_mat_file_ctx(&mat_ctx, a_file);
+  init_mat_file_ctx(&mat_ctx, test_file);
 
+  /* Load matrix A */
   ret = parse_mat_preamble(&mat_ctx);
 
   if ((ret != 0)
@@ -51,12 +49,7 @@ int load_data(int **A_row_indeces, int **A_col_indeces, double **A_values, int *
 #endif
   }
 
-  deinit_mat_file_ctx(&mat_ctx);
-
-
   /* Load vector B */
-  init_mat_file_ctx(&mat_ctx, b_file);
-
   ret = parse_mat_preamble(&mat_ctx);
 
   if ((ret != 0)
@@ -74,11 +67,7 @@ int load_data(int **A_row_indeces, int **A_col_indeces, double **A_values, int *
     load_vector(&mat_ctx, *B);
   }
 
-  deinit_mat_file_ctx(&mat_ctx);
-
   /* Load result vector */
-  init_mat_file_ctx(&mat_ctx, res_file);
-
   ret = parse_mat_preamble(&mat_ctx);
 
   if ((ret != 0)
@@ -96,9 +85,6 @@ int load_data(int **A_row_indeces, int **A_col_indeces, double **A_values, int *
     load_vector(&mat_ctx, *res);
   }
 
-  deinit_mat_file_ctx(&mat_ctx);
-
-  init_mat_file_ctx(&mat_ctx, res_file);
   deinit_mat_file_ctx(&mat_ctx);
 
 done:
@@ -124,11 +110,11 @@ int main()
 
 #ifdef USE_DENSE_MATRIX
   double *matr;
-  size = load_data(&matr, SPARSE_MATRIX_FILE, &vector, VECTOR_FILE, &answer, RES_FILE);
+  size = load_data(TEST_FILE, &matr, &vector, &answer);
 #else
   int *A_row_indeces, *A_col_indeces;
   double *A_values;
-  size = load_data(&A_row_indeces, &A_col_indeces, &A_values, &nnz, SPARSE_MATRIX_FILE, &vector, VECTOR_FILE, &answer, RES_FILE);
+  size = load_data(TEST_FILE, &A_row_indeces, &A_col_indeces, &A_values, &nnz, &vector, &answer);
 #endif
 
   if (size < 0)
