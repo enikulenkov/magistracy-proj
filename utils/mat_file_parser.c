@@ -5,6 +5,8 @@
 #include "mat_file_parser.h"
 #include "utils_internal.h"
 
+#define MAT_FILE_CTX_INITED(ctx) (ctx && (ctx)->f)
+
 int init_mat_file_ctx(mat_file_ctx_t *ctx, char *file_name)
 {
   memset(ctx, 0, sizeof(mat_file_ctx_t));
@@ -42,11 +44,16 @@ int parse_mat_preamble(mat_file_ctx_t *ctx)
   size_t       len = 0;
   prmbl_fld_t  exp_prmbl_fld; 
 
+  if (!MAT_FILE_CTX_INITED(ctx))
+  {
+    return -1;
+  }
+
   exp_prmbl_fld = PRMBL_FLD_TYPE;
 
   while (((read = getline(&ctx->cur_line, &len, ctx->f)) != -1)
            && (ret == 0)
-           && (!strncmp(ctx->cur_line, "# ", 2)))
+           && ((!strncmp(ctx->cur_line, "# ", 2) || !strcmp(ctx->cur_line, "\n"))))
   {
     ctx->cur_line_no++;
 
@@ -149,6 +156,11 @@ int load_sparse_matrix_as_dense(mat_file_ctx_t *ctx, double *A)
   ssize_t read;
   size_t  len = 0;
 
+  if (!MAT_FILE_CTX_INITED(ctx))
+  {
+    return -1;
+  }
+
   /* First line with data is stored in ctx->cur_line.
    * This line was read during parsing preamble */
   do
@@ -206,6 +218,11 @@ int load_vector(mat_file_ctx_t *ctx, double *v)
   ssize_t read;
   size_t  len = 0;
 
+  if (!MAT_FILE_CTX_INITED(ctx))
+  {
+    return -1;
+  }
+
   if (ctx->preamble.cols_cnt > 1)
   {
     return -1;
@@ -251,6 +268,11 @@ int load_sparse_matrix_coo(mat_file_ctx_t *ctx,
   ssize_t read;
   size_t  len = 0;
 
+  if (!MAT_FILE_CTX_INITED(ctx))
+  {
+    return -1;
+  }
+
   /* First line with data is stored in ctx->cur_line.
    * This line was read during parsing preamble */
   do
@@ -290,6 +312,3 @@ int load_sparse_matrix_coo(mat_file_ctx_t *ctx,
 
   return ret;
 }
-
-
-
