@@ -2,3 +2,5 @@
 *.a
 Options
 sparse_matr_vec_mult
+tags
+TAGS
