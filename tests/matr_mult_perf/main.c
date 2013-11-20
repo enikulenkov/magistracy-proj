@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <f77blas.h>
+#include "f77blas.h"
 #include "timer.h"
 
 int g_sizes[] = {1000, 2000, 3500, 5000};
