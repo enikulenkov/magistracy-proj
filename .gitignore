@@ -1,4 +1,4 @@
-lib/
 *.o
+*.a
 Options
 sparse_matr_vec_mult
