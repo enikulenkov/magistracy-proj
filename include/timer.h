@@ -11,6 +11,6 @@ timer_ctx_t;
 void timer_init(timer_ctx_t* timer);
 void timer_start(timer_ctx_t* timer);
 void timer_stop(timer_ctx_t* timer);
-char *timer_diff_as_str(timer_ctx_t* timer);
+const char *timer_diff_as_str(timer_ctx_t* timer);
 
 #endif /* TIMER_H */
