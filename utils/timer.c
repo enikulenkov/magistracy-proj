@@ -18,7 +18,7 @@ void timer_stop(timer_ctx_t* timer)
   timer->end = tsTOD();
 }
 
-char *timer_diff_as_str(timer_ctx_t* timer)
+const char *timer_diff_as_str(timer_ctx_t* timer)
 {
   struct timespec diff = tsSubtract(timer->end, timer->start);
 
