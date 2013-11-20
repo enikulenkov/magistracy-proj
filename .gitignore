@@ -1,1 +1,4 @@
 lib/
+*.o
+Options
+sparse_matr_vec_mult
