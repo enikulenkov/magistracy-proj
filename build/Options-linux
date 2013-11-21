@@ -2,6 +2,8 @@
 
 # Location of the CUDA Toolkit
 CUDA_PATH ?= "/opt/cuda"
+CUDALIB_PATH = /usr/lib/nvidia-304
+CUDARTLIB_PATH = /usr/lib/x86_64-linux-gnu
 
 # internal flags
 NVCC        = nvcc
@@ -16,7 +18,7 @@ LDFLAGS     += -L$(BUILD_HOME)/lib $(UTILS_LIB) $(ALG_LIB) -lm
 ifeq ($(USE_GPUOCELOT),1)
 LDFLAGS     += -L/opt/cuda/lib -locelot
 else
-LDFLAGS     += -L/usr/lib/nvidia-319 -L/usr/lib/x86_64-linux-gnu -lcudart -lcuda
+LDFLAGS     += -L$(CUDALIB_PATH) -L$(CUDARTLIB_PATH) -lcudart -lcuda
 endif
 INCPATH     += -I$(BUILD_HOME)/include
 
