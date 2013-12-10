@@ -42,9 +42,6 @@
   character  text1*14/' Ir   77.0    '/,  &
              text2*14/'      SBK     '/
 
-  INTEGER(2) tmpday,  tmpmonth,  tmpyear
-  INTEGER(2) tmphour, tmpminute, tmpsecond, tmphund
-
   common/bl1/nf$$
   common/blmin/jpr,nnn,iter
   common/blpar/epsilon,c,a0,massa,npar,mpar
@@ -72,7 +69,7 @@
    !556 format(/' na = 2,..., 2123 !!!')
    !goto 999
   !endif
-  na = 5
+  na = 50
 
   name=name1//CharTrans2(na)
 
@@ -86,16 +83,6 @@
   if(ierr /= 0)then
    STOP ' SC_QDM_N: P(3,na),P0(3,na),... allocation failed!'
   endif
-
-  !CALL GETDAT(tmpyear, tmpmonth, tmpday)
-  !CALL GETTIM(tmphour, tmpminute, tmpsecond, tmphund)
-
-  if(tmpyear > 2004)stop 'the end'
-
-! WRITE (nf1, 900) tmpday, tmpmonth, tmpyear
-! 900 FORMAT(/' Дата : ',I2, '/', I2.2, '/', I4.4)
-! WRITE (nf1, 901) tmphour,tmpminute,tmpsecond
-! 901 FORMAT( ' Время: ',I2, ':', I2.2, ':', I2.2/)
 
   tm0=TimMin()
 
@@ -116,10 +103,11 @@
   write(*  ,1111)
   1111 format(/1x,79(1h=)/23x,'I R I D I U M ( quasidynamical mode )' &
                                                          /1x,79(1h=))
+
   write(nf1,1112)na,eps
   1112 format(' number of atoms = ',i12/ &
               ' eps             = ',1pd12.5/)
-               
+
   nf$$=nf1
 
   read(nf0)((R00(m,j),m=1,3),j=1,nat)
@@ -127,6 +115,8 @@
          
 ! Генерация координат ( в нулевом прибл. ) и эфф. зарядов ионов МК;
 ! задание степеней свободы ионов при релаксации
+
+  num = 0
 
   do i=1,na   
    num=num+1
