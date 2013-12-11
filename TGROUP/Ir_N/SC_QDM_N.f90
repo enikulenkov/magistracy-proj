@@ -34,7 +34,7 @@
                           R0(:,:),R(:,:),dWtot(:,:),E(:,:)
 
   real(8)    R00(3,nat),dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
-             Wtot,g0,Cenergy,Clength,Cmass, xx,yy,zz,R$(3)
+             Wtot,g0,Cenergy,Clength,Cmass, R$(3)
 
 
   logical(4) Kmin,GlobIt
@@ -121,15 +121,14 @@
 ! задание степеней свободы ионов при релаксации
 
   do i=1,na
+
+   ! Print coordinates
+   write(nf1,11)i,R00(1,i),R00(2,i),R00(3,i),massa
+   11 format(1x,i3,')',5x,'( ',f8.2,3x,f8.2,3x,f8.2,' )',5x,'mass=',f12.5)
+
    do m=1,3
     R0(m,i)=a0*R00(m,i)
    enddo
-
-   xx=R0(1,i)/a0
-   yy=R0(2,i)/a0
-   zz=R0(3,i)/a0
-   write(nf1,11)i,xx,yy,zz,massa
-   11 format(1x,i3,')',5x,'( ',f8.2,3x,f8.2,3x,f8.2,' )',5x,'mass=',f12.5)
 
   enddo
 
