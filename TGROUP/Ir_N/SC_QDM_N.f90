@@ -30,7 +30,7 @@
 
   real(8)    dt,Epot(itM),Ekin(itM),s
 
-  real(8),   allocatable::P(:,:),P0(:,:),P1(:,:),mass(:),    &
+  real(8),   allocatable::P(:,:),P0(:,:),P1(:,:),   &
                           R0(:,:),R(:,:),dWtot(:,:),E(:,:)
 
   real(8)    R00(3,nat),dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
@@ -83,7 +83,7 @@
   Open(nf4,FILE=name//'.ang',FORM='formatted',STATUS='unknown')
   Open(nf5,FILE=name//'.ene',FORM='formatted',STATUS='unknown')
 
-  allocate(P(3,na),P0(3,na),P1(3,na),mass(na),          &
+  allocate(P(3,na),P0(3,na),P1(3,na),        &
            R0(3,na),R(3,na),dWtot(3,na),E(3,na),stat=ierr)
   if(ierr /= 0)then
    STOP ' SC_QDM_N: P(3,na),P0(3,na),... allocation failed!'
@@ -97,6 +97,7 @@
 
   epsilon=epsilon/Cenergy ! перевод в а.е. энергии
   a0=a0/Clength           ! перевод в а.е. длины
+  massa=massa*Cmass
 
 ! ====================================================================
   dt   =10.d0        !   временной шаг (а.е.)
@@ -124,12 +125,10 @@
     R0(m,i)=a0*R00(m,i)
    enddo
 
-   mass(i)=massa*Cmass
-
    xx=R0(1,i)/a0
    yy=R0(2,i)/a0
    zz=R0(3,i)/a0
-   write(nf1,11)i,xx,yy,zz,mass(i)
+   write(nf1,11)i,xx,yy,zz,massa
    11 format(1x,i3,')',5x,'( ',f8.2,3x,f8.2,3x,f8.2,' )',5x,'mass=',f12.5)
 
   enddo
@@ -203,11 +202,11 @@
    P0(2,i)=P1(2,i)
    P0(3,i)=P1(3,i)
    P1(1,i)=P0(1,i)-dt*dWtot(1,i)
-   R(1,i)=R(1,i)+dt*P1(1,i)/mass(i)
+   R(1,i)=R(1,i)+dt*P1(1,i)/massa
    P1(2,i)=P0(2,i)-dt*dWtot(2,i)
-   R(2,i)=R(2,i)+dt*P1(2,i)/mass(i)
+   R(2,i)=R(2,i)+dt*P1(2,i)/massa
    P1(3,i)=P0(3,i)-dt*dWtot(3,i)
-   R(3,i)=R(3,i)+dt*P1(3,i)/mass(i)
+   R(3,i)=R(3,i)+dt*P1(3,i)/massa
    P(1,i)=0.5d0*(P1(1,i)+P0(1,i))
    P(2,i)=0.5d0*(P1(2,i)+P0(2,i))
    P(3,i)=0.5d0*(P1(3,i)+P0(3,i))
@@ -215,7 +214,7 @@
 
   s=0.d0
   do i=1,na
-   s=s+(P(1,i)**2+P(2,i)**2+P(3,i)**2)/mass(i)
+   s=s+(P(1,i)**2+P(2,i)**2+P(3,i)**2)/massa
   enddo
 
   Ekin(it)=0.5d0*s
@@ -297,7 +296,7 @@
                                                   1x,79(1h=))
   print *,char(7)
 
-  deallocate(P,P0,P1,mass,R0,R,dWtot,E,stat=ierr)
+  deallocate(P,P0,P1,R0,R,dWtot,E,stat=ierr)
   if(ierr /= 0)then
    STOP ' SC_QDM_N: P,P0,... deallocation failed!'
   endif
