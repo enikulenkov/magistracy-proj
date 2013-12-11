@@ -2,7 +2,13 @@
 !
 !    Кластер иридия (Sutton-Chen potensial)
 !    Квазидинамический режим (атомные единицы)
+! 
+!  Input data:
+!    na - number of atoms
+!    FCC.dat - coordinates of the atoms
 !
+!  Literature:
+!  [1] http://www.wag.caltech.edu/home-pages/tahir/psfiles/51.ps
 
   Program SC_QDM_N
 
@@ -28,12 +34,12 @@
                           R0(:,:),R(:,:),dWtot(:,:),E(:,:)
 
   real(8)    R00(3,nat),dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
-             Wtot,g0,Cenergy,Clenght,Cmass, xx,yy,zz,R$(3)
+             Wtot,g0,Cenergy,Clength,Cmass, xx,yy,zz,R$(3)
 
 
   logical(4) Kmin,GlobIt
 
-  integer(4) nf$$,jpr,nnn,iter,itfin,itest,i,j,mode,     &
+  integer(4) jpr,nnn,iter,itfin,itest,i,j,mode,     &
              m,mm,ii,it,ion,k,nt,na,ierr
 
   integer(4) frequency,duration
@@ -42,7 +48,6 @@
   character  text1*14/' Ir   77.0    '/,  &
              text2*14/'      SBK     '/
 
-  common/bl1/nf$$
   common/blmin/jpr,nnn,iter
   common/blpar/epsilon,c,a0,massa,npar,mpar
 
@@ -86,12 +91,12 @@
 
   tm0=TimMin()
 
-  Cenergy=27.2116d0
-  Clenght=0.529177d0
-  Cmass  =1836.15d0
+  Cenergy=27.2116d0    ! http://en.wikipedia.org/wiki/Hartree
+  Clength=0.529177d0   ! http://en.wikipedia.org/wiki/Bohr_radius
+  Cmass  =1836.15d0    ! Mproton/Melectron
 
   epsilon=epsilon/Cenergy ! перевод в а.е. энергии
-  a0=a0/Clenght           ! перевод в а.е. длины
+  a0=a0/Clength           ! перевод в а.е. длины
 
 ! ====================================================================
   dt   =10.d0        !   временной шаг (а.е.)
@@ -107,8 +112,6 @@
   write(nf1,1112)na,eps
   1112 format(' number of atoms = ',i12/ &
               ' eps             = ',1pd12.5/)
-
-  nf$$=nf1
 
   read(nf0)((R00(m,j),m=1,3),j=1,nat)
   close(nf0)
@@ -276,7 +279,7 @@
 
 ! Файл для сохранения координат кластера в ангстремах (для GAMESS)
    do i=1,na
-    write(nf4,774)text1,(R(m,i)*Clenght,m=1,3)
+    write(nf4,774)text1,(R(m,i)*Clength,m=1,3)
     774 format(1x,a14,3f18.7)
     write(nf4,775)text2
     775 format(1x,a14/)
@@ -519,6 +522,7 @@
   data n       /13/
   data m       / 6/
 
+  ! data from table 1 ([1])
   data epsilon /3.7674d0  / ! в эВ
   data c       /224.8150d0/
   data a       /3.8344d0  / ! в ангстремах
