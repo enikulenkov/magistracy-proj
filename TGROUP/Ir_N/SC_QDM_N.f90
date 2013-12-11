@@ -3,11 +3,11 @@
 !    Кластер иридия (Sutton-Chen potensial)
 !    Квазидинамический режим (атомные единицы)
 !
-      
-  Program SC_QDM_N 
 
-  implicit NONE 
-                      
+  Program SC_QDM_N
+
+  implicit NONE
+
   integer(4), parameter::itM =10000 !  максимальное число итераций
   integer(4), parameter::nmax=  itM !  максимальное число точек
 
@@ -23,19 +23,19 @@
   real(8)    epsilon,c,a0,massa
 
   real(8)    dt,Epot(itM),Ekin(itM),s
-             
+
   real(8),   allocatable::P(:,:),P0(:,:),P1(:,:),mass(:),    &
                           R0(:,:),R(:,:),dWtot(:,:),E(:,:)
-  
+
   real(8)    R00(3,nat),dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
              Wtot,g0,Cenergy,Clenght,Cmass, xx,yy,zz,R$(3)
- 
 
-  logical(4) Kmin,GlobIt 
-  
-  integer(4) nf$$,jpr,nnn,iter,itfin,itest,num,i,j,mode,     &
+
+  logical(4) Kmin,GlobIt
+
+  integer(4) nf$$,jpr,nnn,iter,itfin,itest,i,j,mode,     &
              m,mm,ii,it,ion,k,nt,na,ierr
- 
+
   integer(4) frequency,duration
   character  inf*79,CharTrans2*4,name1*7/'Ir_QDM_'/,name*11
 
@@ -86,17 +86,17 @@
 
   tm0=TimMin()
 
-  Cenergy=27.2116d0  
+  Cenergy=27.2116d0
   Clenght=0.529177d0
-  Cmass  =1836.15d0 
+  Cmass  =1836.15d0
 
   epsilon=epsilon/Cenergy ! перевод в а.е. энергии
   a0=a0/Clenght           ! перевод в а.е. длины
 
 ! ====================================================================
   dt   =10.d0        !   временной шаг (а.е.)
-  eps  =1.d-8        !   нижняя граница пикового значения Екин           
-  mode =1            !   0, прогон без релаксации      
+  eps  =1.d-8        !   нижняя граница пикового значения Екин
+  mode =1            !   0, прогон без релаксации
   itest=0            !   тест для произв. полн. энергии ( 0 - нет )
 ! ====================================================================
   write(nf1,1111)
@@ -112,24 +112,21 @@
 
   read(nf0)((R00(m,j),m=1,3),j=1,nat)
   close(nf0)
-         
+
 ! Генерация координат ( в нулевом прибл. ) и эфф. зарядов ионов МК;
 ! задание степеней свободы ионов при релаксации
 
-  num = 0
-
-  do i=1,na   
-   num=num+1
+  do i=1,na
    do m=1,3
     R0(m,i)=a0*R00(m,i)
    enddo
 
-   mass(num)=massa*Cmass
+   mass(i)=massa*Cmass
 
    xx=R0(1,i)/a0
    yy=R0(2,i)/a0
    zz=R0(3,i)/a0
-   write(nf1,11)i,xx,yy,zz,mass(num)
+   write(nf1,11)i,xx,yy,zz,mass(i)
    11 format(1x,i3,')',5x,'( ',f8.2,3x,f8.2,3x,f8.2,' )',5x,'mass=',f12.5)
 
   enddo
@@ -144,7 +141,7 @@
 ! 22 format(/' R',2x,1p3d12.5,2x,3d12.5)
 
 ! Вычисление потенциальной энергии и ее частных производных
-! для стартовой пространственной конфигурации 
+! для стартовой пространственной конфигурации
   Call FgSC(na,R,Wtot,dWtot,g0)
   write(nf1,8200)Cenergy*Wtot
   write(nf1,8201)(dWtot(mm,1),mm=1,3)
@@ -169,7 +166,7 @@
 
   t0=TimMin()
   100 continue  !  Hачало итераций /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-   
+
   if(Kmin)then ! Kmin=.TRUE. - локальный минимум //////////////////
 ! print *,char(7)
 
@@ -178,7 +175,7 @@
    write(*  ,10)it,Ekin(it),Epot(it),Ekin(it)+Epot(it)
    10  format(5x,i5,')',5x,'Ekin=',1pd12.5,3x,  &
                            'Epot=',d12.5,3x,'Etot=',d12.5)
-   t0=TimMin()       
+   t0=TimMin()
    if(Ekin(it).lt.eps)then
     itfin=it
     goto 200  ! выход из итерационного процесса @@@@@@@@
@@ -192,8 +189,8 @@
    Kmin=.FALSE.
    GlobIt=.FALSE.
   endif ! if(Kmin)...
-     
-  it=it+1      
+
+  it=it+1
 
   if(it.gt.1)then
    Call FgSC(na,R,Wtot,dWtot,g0)
@@ -210,17 +207,17 @@
    R(3,i)=R(3,i)+dt*P1(3,i)/mass(i)
    P(1,i)=0.5d0*(P1(1,i)+P0(1,i))
    P(2,i)=0.5d0*(P1(2,i)+P0(2,i))
-   P(3,i)=0.5d0*(P1(3,i)+P0(3,i))                     
+   P(3,i)=0.5d0*(P1(3,i)+P0(3,i))
   enddo
 
   s=0.d0
   do i=1,na
    s=s+(P(1,i)**2+P(2,i)**2+P(3,i)**2)/mass(i)
-  enddo 
+  enddo
 
   Ekin(it)=0.5d0*s
 ! Вычисление потенциальной энергии и ее частных производных
-! для текущей пространственной конфигурации 
+! для текущей пространственной конфигурации
   Call FgSC(na,R,Wtot,dWtot,g0)
   Epot(it)=Wtot
 
@@ -229,19 +226,19 @@
   endif
 
   GlobIt=.TRUE.
-    
+
   if(it.lt.itM)goto 100
 
-  202 continue      
+  202 continue
   write(nf1,201)
   write(*  ,201)
   201 format(//' Self-consistency is not reached...')
   stop
 
   200 continue ! /////////////////////////////////////////////
-    
+
   500 continue
-  
+
   Wtot=Cenergy*Wtot
   write(nf1,8200)Wtot
   8200 format(/' Wtot=',1pd15.8,' eV')
@@ -253,7 +250,7 @@
 
   write(nf1,8300)
   8300 format(/1x,79(1h-)/t24,'Coordinates and Displacements (a0) '/)
-               
+
   do i=1,na
    do m=1,3
     dR(m)=(R(m,i)-R0(m,i))/a0
@@ -271,7 +268,7 @@
   do i=1,itfin
    Ekin(i)=Cenergy*Ekin(i)
    Epot(i)=Cenergy*Epot(i)
-  enddo    
+  enddo
 
 ! Файл для сохранения координат кластера в ед. a0
    write(nf3,773)((R(m,i)/a0,m=1,3),i=1,na)
@@ -286,7 +283,7 @@
    enddo
 
 ! Файл для сохранения Ekin и Epot
-  write(nf5,776)(Ekin(i),Epot(i),i=1,itfin) 
+  write(nf5,776)(Ekin(i),Epot(i),i=1,itfin)
   776 format(1x,f15.5,3x,f15.5)
 
   777 tm1=TimMin()-tm0
@@ -296,35 +293,35 @@
   700 format(/' <<< Run is over, Tcalc = ',1pd9.3,' min >>>'/  &
                                                   1x,79(1h=))
   print *,char(7)
- 
-  deallocate(P,P0,P1,mass,R0,R,dWtot,E,stat=ierr)           
+
+  deallocate(P,P0,P1,mass,R0,R,dWtot,E,stat=ierr)
   if(ierr /= 0)then
    STOP ' SC_QDM_N: P,P0,... deallocation failed!'
-  endif  
+  endif
 
   stop
   END
 
 !///////////////////////////////////////////////////////////////////
-  
+
   real*8 function Fi1(r)
   implicit NONE
-  integer(4) n,m  
-  real(8)    r,epsilon,c,a,massa  
+  integer(4) n,m
+  real(8)    r,epsilon,c,a,massa
   common/blpar/epsilon,c,a,massa,n,m
   Fi1=-(a*m*(a/r)**(m-1))/(r*r)
   return
   end
-  
+
   real*8 function V1(r)
   implicit NONE
-  integer(4) n,m  
-  real(8)    r,epsilon,c,a,massa  
+  integer(4) n,m
+  real(8)    r,epsilon,c,a,massa
   common/blpar/epsilon,c,a,massa,n,m
   V1=-(a*n*(a/r)**(n-1))/(r*r)
   return
   end
-     
+
   subroutine SubFr(r1,r2,Fr)
   implicit NONE
   real(8)    r1(3),r2(3),Fr(3),d
@@ -335,10 +332,10 @@
   enddo
   return
   end
-  
-  real*8 function Ro(i,R,na)   
+
+  real*8 function Ro(i,R,na)
   implicit NONE
-  integer(4) n,m,i,j,na  
+  integer(4) n,m,i,j,na
   real(8)    epsilon,c,a,massa,sum,R(3,na),d
   common/blpar/epsilon,c,a,massa,n,m
   sum=0.d0
@@ -364,10 +361,10 @@
 
   Subroutine FgSC(na,R,Wtot,dWtot,g0)
   implicit NONE
-        
+
   integer*4  na,i,j,k,m,l,nf1,iter,nnn,jpr
   integer(4) npar,mpar,del,np
-  real(8)    epsilon,c,a0,massa  
+  real(8)    epsilon,c,a0,massa
   real(8)    R(3,na),Rmin,V,Vij,W,Wtot,dWtot(3,na),g0,gg, &
          s1(3),s2(3),d,ri(3),rj(3),rk(3),dr(3), &
          den,sden,dum,Ro,V1,Fi1
@@ -380,7 +377,7 @@
 
   data Rmin/0.1d0/
 
-  W=0.d0    
+  W=0.d0
 
   do m=1,3
    do j=1,na
@@ -395,10 +392,10 @@
    do m=1,3
     ri(m)=R(m,i)
    enddo
-   V=0.d0    
+   V=0.d0
    do j=1,na
     if(j==i)cycle
-    do m=1,3   
+    do m=1,3
      rj(m)=R(m,j)
     enddo
     d=dsqrt((ri(1)-rj(1))**2+   &
@@ -411,7 +408,7 @@
     do m=1,3
       s1(m)=0.5d0*V1(d)*dr(m)
     enddo
-    do l=1,na     
+    do l=1,na
      do m=1,3
       dWtot(m,l)=dWtot(m,l)+s1(m)*(del(i,l)-del(j,l))
      enddo
@@ -419,7 +416,7 @@
    enddo ! j
    do k=1,na
     if(k==i)cycle
-    do m=1,3   
+    do m=1,3
      rk(m)=R(m,k)
     enddo
     d=dsqrt((ri(1)-rk(1))**2+   &
@@ -431,10 +428,10 @@
     enddo
     do l=1,na
      do m=1,3
-      dWtot(m,l)=dWtot(m,l)-s2(m)*(del(i,l)-del(k,l))      
+      dWtot(m,l)=dWtot(m,l)-s2(m)*(del(i,l)-del(k,l))
      enddo
-    enddo ! l     
-   enddo ! k  
+    enddo ! l
+   enddo ! k
    W=W+0.5d0*V-c*sden
   enddo ! i
 
@@ -445,7 +442,7 @@
    do m=1,3
     dWtot(m,l)=epsilon*dWtot(m,l)
     g0=g0+dWtot(m,l)**2
-   enddo 
+   enddo
   enddo
   g0=dsqrt(g0)
   iter=iter+1
@@ -468,21 +465,21 @@
   Stop
   END
 
-  character(4) function CharTrans2(x) 
+  character(4) function CharTrans2(x)
   ! Преобразование целого положительного
   ! числа < 10000 в строку
   implicit NONE
-  integer(4), parameter::m=4 
+  integer(4), parameter::m=4
   integer(4) x,xx,i,j,n1(m),k
   character*(m) ss
   character*1 s(10)
   data s/'1','2','3','4','5','6','7','8','9','0'/
 
   xx = x
-  
+
   do i=m-1,0,-1
    j=10**i
-   n1(m-i) = int(xx/j)      
+   n1(m-i) = int(xx/j)
    xx = xx - j * n1(m-i)
 !  print*,i,j,n1(m-i),xx
   enddo
@@ -513,10 +510,10 @@
   END
 
   BLOCK DATA ParIr ! Sutton-Chen potential, a.u.
- 
-  integer(4) n,m  
-  real(8)    epsilon,c,a,massa 
-  
+
+  integer(4) n,m
+  real(8)    epsilon,c,a,massa
+
   common/blpar/epsilon,c,a,massa,n,m
 
   data n       /13/
@@ -526,7 +523,7 @@
   data c       /224.8150d0/
   data a       /3.8344d0  / ! в ангстремах
   data massa   /192.2170d0/ ! атомный вес
-                 
+
 ! Иридий состоит из двух стабильных изотопов:
 ! Ir191 (37.3%) и Ir193 (62.7%);
 ! атомный вес 192.217
