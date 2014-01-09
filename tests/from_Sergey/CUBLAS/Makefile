@@ -12,4 +12,4 @@ OBJS= ${SRCS:.c=.o}
 LDFLAGS += -lcublas
 
 $(BIN1): $(OBJS)
-	$(LINK_BINARY_CUDA) $(BLAS_LIBS)
+	$(LINK_BINARY_CUDA)

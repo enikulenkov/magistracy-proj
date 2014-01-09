@@ -105,24 +105,19 @@ int main(int argc, char *argv[])
     }
     ut[m - 1] = A[m + (m - 1)*N] + sqrt(sigma);  //ut[[1, m - 1]] = A[[m, m - 1]] + Sqrt[sigma];
     
-    // !CUDA very slow!
-    //status = cublasSetMatrix(N, 1, sizeof(double), ut, N, cuda_ut, N);
-    //double H = cublasSdot(N, cuda_ut, 1, cuda_ut, 1) / 2; // {{H}} = 0.5*ut.u;
-    double H = cblas_ddot(N, ut, 1, ut, 1) / 2; // {{H}} = 0.5*ut.u;
+    status = cublasSetMatrix(N, 1, sizeof(double), ut, N, cuda_ut, N);
+    double H = cublasDdot(N, cuda_ut, 1, cuda_ut, 1) / 2; // {{H}} = 0.5*ut.u;
 
-    //status = cublasSetMatrix(N, N, sizeof(double), A0, N, cuda_A0, N);
+    status = cublasSetMatrix(N, N, sizeof(double), A0, N, cuda_A0, N);
     for (j = 0; j < N; j++)
     {
-      // !CUDA very slow!
-      //status = cublasSetMatrix(N, 1, sizeof(double), &A0[j*N], N, cuda_A0, N);
-      //p[j] = cublasDdot(N, &cuda_A0[j*N], 1, cuda_ut, 1) / H; //p = A0.u/H;                // TODO replace cuda_A0 -> &cuda_A0[j*N]
-      p[j] = cblas_ddot(N, &A0[j*N], 1, ut, 1) / H; //p = A0.u/H;
+      status = cublasSetMatrix(N, 1, sizeof(double), &A0[j*N], N, cuda_A0, N);
+      p[j] = cublasDdot(N, &cuda_A0[j*N], 1, cuda_ut, 1) / H; //p = A0.u/H;
     }
     
     // !CUDA very slow!
-    //status = cublasSetMatrix(N, 1, sizeof(double), p, N, cuda_p, N);
-    //double K = cublasDdot(N, cuda_ut, 1, cuda_p, 1) / (2.0 * H); //{{ K }} = ut.p / (2.0*H);
-    double K = cblas_ddot(N, ut, 1, p, 1) / (2.0 * H); //{{ K }} = ut.p / (2.0*H);
+    status = cublasSetMatrix(N, 1, sizeof(double), p, N, cuda_p, N);
+    double K = cublasDdot(N, cuda_ut, 1, cuda_p, 1) / (2.0 * H); //{{ K }} = ut.p / (2.0*H);
     for (j = 0; j < N; j++)
     {
       q[j] = p[j] - K*ut[j]; //q = p - K*u;
