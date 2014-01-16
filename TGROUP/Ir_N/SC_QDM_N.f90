@@ -521,7 +521,7 @@
   data m       / 6/
 
   ! data from table 1 ([1])
-  data epsilon /3.7674d0  / ! в эВ (TODO: *10-3???)
+  data epsilon /3.7674d-3  / ! в эВ
   data c       /224.8150d0/
   data a       /3.8344d0  / ! в ангстремах
   data massa   /192.2170d0/ ! атомный вес
