@@ -342,9 +342,9 @@
   sum=0.d0
   do j=1,na
    if(j==i)cycle
-   d=dsqrt((R(1,1)-R(1,2))**2+    &
-           (R(2,1)-R(2,2))**2+    &
-           (R(3,1)-R(3,2))**2)
+   d=dsqrt((R(1,i)-R(1,j))**2+    &
+           (R(2,i)-R(2,j))**2+    &
+           (R(3,i)-R(3,j))**2)
    sum=sum+(a/d)**m
   enddo
   Ro=sum
@@ -389,7 +389,7 @@
   do i=1,na
    den=Ro(i,R,na)
    sden=dsqrt(den)
-   dum=0.5d0*c/sden
+   dum=0.5d0*c/sden ! TODO: Why multiplication on 0.5?
    do m=1,3
     ri(m)=R(m,i)
    enddo
@@ -521,7 +521,7 @@
   data m       / 6/
 
   ! data from table 1 ([1])
-  data epsilon /3.7674d0  / ! в эВ
+  data epsilon /3.7674d0  / ! в эВ (TODO: *10-3???)
   data c       /224.8150d0/
   data a       /3.8344d0  / ! в ангстремах
   data massa   /192.2170d0/ ! атомный вес
