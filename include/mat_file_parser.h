@@ -1,12 +1,6 @@
 #ifndef MAT_FILE_PARSER_H
 #define MAT_FILE_PARSER_H 1
 
-#ifdef DEBUG
-#define  DBG_LOG printf
-#else
-#define  DBG_LOG
-#endif
-
 typedef enum mat_obj_type_e
 {
   SPARSE_MATRIX,
@@ -45,5 +39,6 @@ int load_sparse_matrix_coo(mat_file_ctx_t *ctx,
 int load_sparse_matrix_as_dense(mat_file_ctx_t *ctx, double *A);
 int load_dense_matrix(mat_file_ctx_t *ctx, double *A, int n);
 int load_vector(mat_file_ctx_t *ctx, double *v);
+int load_matr(mat_file_ctx_t *ctx, double *A);
 
 #endif /* MAT_FILE_PARSER_H */

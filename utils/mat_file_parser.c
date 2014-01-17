@@ -258,6 +258,49 @@ int load_vector(mat_file_ctx_t *ctx, double *v)
 }
 
 
+int load_matr(mat_file_ctx_t *ctx, double *A)
+{
+  int     i = 0, j = 0;
+  int     ret = 0;
+  ssize_t read;
+  size_t  len = 0;
+
+  if (!MAT_FILE_CTX_INITED(ctx))
+  {
+    return -1;
+  }
+
+  /* First line with data is stored in ctx->cur_line.
+   * This line was read during parsing preamble */
+  do
+  {
+    /* TODO: Change it !!! */
+    sscanf(ctx->cur_line, "%lf %lf %lf\n",
+        &A[i*ctx->preamble.cols_cnt + 0],
+        &A[i*ctx->preamble.cols_cnt + 1],
+        &A[i*ctx->preamble.cols_cnt + 2]
+        );
+
+    read = getline(&ctx->cur_line, &len, ctx->f);
+
+    if (read != -1)
+    {
+      ctx->cur_line_no++;
+    }
+    else
+    {
+      DBG_LOG("Error: too few rows in file\n");
+      ret = -1;
+    }
+
+    i++;
+  }
+  while ((i < ctx->preamble.rows_cnt) && (ret == 0));
+
+  return ret;
+}
+
+
 int load_sparse_matrix_coo(mat_file_ctx_t *ctx,
     int *row_indeces,
     int *col_indeces,
