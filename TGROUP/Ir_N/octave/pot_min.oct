@@ -1,0 +1,42 @@
+global CLENGTH = 0.529177;
+global A_PARAM = 3.8344/CLENGTH;
+global N_PARAM = 13;
+global M_PARAM = 6;
+global C_PARAM = 224.815;
+global CENERGY = 27.2116;
+global EPS_PARAM  = 0.0037674/CENERGY;
+
+
+function res = pot_energy(A)
+	global CLENGTH
+	global A_PARAM
+	global N_PARAM
+	global M_PARAM
+	global C_PARAM
+	global CENERGY
+	global EPS_PARAM
+
+	[n, _col] = size(A);
+	pair_potentials = zeros(n,1);
+	ro = zeros(n,1);
+	res = 0;
+
+	for i= 1:n
+		for j= i+1:n
+			dist = sqrt((A(i,1) - A(j,1))**2 + (A(i,2) - A(j,2))**2 + (A(i,3) - A(j,3))**2);
+			a_dist = A_PARAM / dist;
+			dist_pow_n = a_dist ** N_PARAM;
+			dist_pow_m = a_dist ** M_PARAM;
+			pair_potentials(i) += dist_pow_n;
+			pair_potentials(j) += dist_pow_n;
+			ro(i) += dist_pow_m;
+			ro(j) += dist_pow_m;
+		end;
+	res +=  0.5*pair_potentials(i) - C_PARAM*sqrt(ro(i));
+	end;
+	res *= EPS_PARAM;
+end;
+
+load('../tetrahedron.mat')
+a_0 = 3.8344/CLENGTH;
+[x, fvec, info, output, grad, hess] = fminunc(@pot_energy, B(1:3,:)*a_0)
