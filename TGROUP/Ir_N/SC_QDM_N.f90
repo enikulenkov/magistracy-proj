@@ -17,7 +17,6 @@
   integer(4), parameter::itM =10000 !  максимальное число итераций
   integer(4), parameter::nmax=  itM !  максимальное число точек
 
-  integer(4), parameter::nf0 =   33
   integer(4), parameter::nf1 =   17
   integer(4), parameter::nf3 =   23
   integer(4), parameter::nf4 =   24
@@ -33,7 +32,7 @@
   real(8),   allocatable::P(:,:),P0(:,:),P1(:,:),   &
                           R0(:,:),R(:,:),dWtot(:,:),E(:,:)
 
-  real(8)    R00(3,nat),dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
+  real(8)    R00(3*nat), dR(3),tm0,Tm1,t0,t,TimMin,eps,Fm,    &
              Wtot,g0,Cenergy,Clength,Cmass, R$(3)
 
 
@@ -48,10 +47,10 @@
   character  text1*14/' Ir   77.0    '/,  &
              text2*14/'      SBK     '/
 
+  character(20) :: filename = 'tetrahedron.mat'//CHAR(0)
+
   common/blmin/jpr,nnn,iter
   common/blpar/epsilon,c,a0,massa,npar,mpar
-
-  Open(nf0,FILE='FCC.dat',FORM='unformatted',STATUS='OLD')
 
   data inf/' Sutton-Chen potential, a.u.'/
 
@@ -66,15 +65,7 @@
 !       Mproton/Melectron =    1836.15
 !       --------------------------------------------
 
-  !999 print 555
-  !555 format(/' na = ',$)
-  !read(5,*)na
-  !if(na > nat .OR. na < 2)then
-   !print 556
-   !556 format(/' na = 2,..., 2123 !!!')
-   !goto 999
-  !endif
-  na = 50
+  call read_input(filename, R00, na)
 
   name=name1//CharTrans2(na)
 
@@ -88,6 +79,7 @@
   if(ierr /= 0)then
    STOP ' SC_QDM_N: P(3,na),P0(3,na),... allocation failed!'
   endif
+
 
   tm0=TimMin()
 
@@ -114,20 +106,17 @@
   1112 format(' number of atoms = ',i12/ &
               ' eps             = ',1pd12.5/)
 
-  read(nf0)((R00(m,j),m=1,3),j=1,nat)
-  close(nf0)
-
 ! Генерация координат ( в нулевом прибл. ) и эфф. зарядов ионов МК;
 ! задание степеней свободы ионов при релаксации
 
   do i=1,na
 
    ! Print coordinates
-   write(nf1,11)i,R00(1,i),R00(2,i),R00(3,i),massa
+   write(nf1,11)i,R00((i-1)*3+1),R00((i-1)*3+2),R00((i-1)*3+3),massa
    11 format(1x,i3,')',5x,'( ',f8.2,3x,f8.2,3x,f8.2,' )',5x,'mass=',f12.5)
 
    do m=1,3
-    R0(m,i)=a0*R00(m,i)
+    R0(m,i)=a0*R00((i-1)*3+m)
    enddo
 
   enddo
@@ -257,7 +246,8 @@
     dR(m)=(R(m,i)-R0(m,i))/a0
    enddo
    if(mode.eq.0)goto 300
-   write(nf1,8307)i,(R(m,i)/a0,m=1,3),(dR(m),m=1,3)
+   !write(nf1,8307)i,(R(m,i)/a0,m=1,3),(dR(m),m=1,3)
+   write(nf1,8307)i,(R(m,i)/a0,m=1,3),(R(m,i),m=1,3)
    8307 format(1x,i3,')',3f12.5,3x,3f12.5)
   enddo
 
