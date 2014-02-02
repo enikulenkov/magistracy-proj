@@ -4,6 +4,7 @@
 #include <string.h>
 #include "mat_file_parser.h"
 #include "utils_internal.h"
+#include "utils.h"
 
 #define MAT_FILE_CTX_INITED(ctx) (ctx && (ctx)->f)
 
@@ -281,19 +282,22 @@ int load_matr(mat_file_ctx_t *ctx, double *A)
         &A[i*ctx->preamble.cols_cnt + 2]
         );
 
-    read = getline(&ctx->cur_line, &len, ctx->f);
-
-    if (read != -1)
-    {
-      ctx->cur_line_no++;
-    }
-    else
-    {
-      DBG_LOG("Error: too few rows in file\n");
-      ret = -1;
-    }
-
     i++;
+    
+    if (i < ctx->preamble.rows_cnt)
+    {
+      read = getline(&ctx->cur_line, &len, ctx->f);
+
+      if (read != -1)
+      {
+        ctx->cur_line_no++;
+      }
+      else
+      {
+        DBG_LOG("Error: too few rows in file\n");
+        ret = -1;
+      }
+    }
   }
   while ((i < ctx->preamble.rows_cnt) && (ret == 0));
 
