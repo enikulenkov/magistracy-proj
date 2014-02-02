@@ -3,6 +3,7 @@
 
 extern "C" {
 #include "utils.h"
+#include "mat_file_writer.h"
 }
 
 int read_input(char *test_file, double **A);
