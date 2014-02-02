@@ -47,7 +47,7 @@
   character  text1*14/' Ir   77.0    '/,  &
              text2*14/'      SBK     '/
 
-  character(20) :: filename = 'tetrahedron1.mat'//CHAR(0)
+  character(32) :: filename
   character(10) :: out_fname = 'out_f.cml'//CHAR(0)
 
   common/blmin/jpr,nnn,iter
@@ -65,6 +65,12 @@
 !       1 а.е.массы =          9.1095d-28 г
 !       Mproton/Melectron =    1836.15
 !       --------------------------------------------
+
+  call GET_COMMAND_ARGUMENT(1, filename)
+  filename = trim(filename) // CHAR(0)
+  if (LEN_TRIM(filename) == 0) then
+    STOP 'Usage: sc_qdm_n {input_file.mat}'
+  endif
 
   call read_input(filename, R00, na)
 
