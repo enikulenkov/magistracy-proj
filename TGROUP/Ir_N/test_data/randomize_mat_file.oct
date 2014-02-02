@@ -1,0 +1,29 @@
+#!/usr/bin/octave
+
+if nargin < 1
+  printf("Usage: %s {mat_file_to_randomize}", program_name())
+end
+
+arg_list = argv()
+
+inname = arg_list{1}
+load (inname)
+
+[rows, cols] = size(B)
+for i = 1:rows
+  for j= 1:cols
+    sign = rand();
+    if (sign < 0.5)
+      sign = 1;
+    else
+      sign = -1;
+    end
+    prob = rand();
+    if (prob > 0.66)
+      B(i,j) = B(i,j)+sign*rand()*0.25;
+    end
+  end
+end
+
+outfname = [ inname(1 : findstr(inname, ".mat") - 1), "r.mat" ]
+save(outfname, "B")
