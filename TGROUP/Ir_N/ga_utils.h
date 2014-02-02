@@ -7,4 +7,6 @@ extern "C" {
 
 int read_input(char *test_file, double **A);
 
+int write_output(char *out_filename, double *A, int n);
+
 #endif /* GA_UTILS_H */

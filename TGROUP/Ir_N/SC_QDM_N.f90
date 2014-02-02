@@ -47,7 +47,8 @@
   character  text1*14/' Ir   77.0    '/,  &
              text2*14/'      SBK     '/
 
-  character(20) :: filename = 'tetrahedron.mat'//CHAR(0)
+  character(20) :: filename = 'tetrahedron1.mat'//CHAR(0)
+  character(10) :: out_fname = 'out_f.cml'//CHAR(0)
 
   common/blmin/jpr,nnn,iter
   common/blpar/epsilon,c,a0,massa,npar,mpar
@@ -243,13 +244,16 @@
 
   do i=1,na
    do m=1,3
-    dR(m)=(R(m,i)-R0(m,i))/a0
+     dR(m)=(R(m,i)-R0(m,i))/a0
+     R00((i-1)*3+m)=R(m,i)
    enddo
    if(mode.eq.0)goto 300
    !write(nf1,8307)i,(R(m,i)/a0,m=1,3),(dR(m),m=1,3)
    write(nf1,8307)i,(R(m,i)/a0,m=1,3),(R(m,i),m=1,3)
    8307 format(1x,i3,')',3f12.5,3x,3f12.5)
   enddo
+
+  call write_output(out_fname, R00, na)
 
   300 continue
 

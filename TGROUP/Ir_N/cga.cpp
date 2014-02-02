@@ -22,8 +22,8 @@
 cga::cga(int n):pagmo::problem::base(n*3)
 {
   // Set bounds.
-  set_lb(-10.0);
-  set_ub(10.0);
+  set_lb(-40.0);
+  set_ub(40.0);
 }
 
 
