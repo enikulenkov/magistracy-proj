@@ -5,6 +5,7 @@
 #include <string>
 
 #include <pagmo/pagmo.h>
+//#include <pagmo.h>
 
 class cga : public pagmo::problem::base
 {

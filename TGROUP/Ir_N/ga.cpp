@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <pagmo/pagmo.h>
+//#include <pagmo.h>
 #include "cga.h"
 #include "ga_utils.h"
 
@@ -13,7 +14,7 @@ double g_a0 = 3.8344/Clength; /* Lattice constant. http://en.wikipedia.org/wiki/
 void do_work(double *init_coords, int atoms_cnt, double *res_coords, double *min_value)
 {
   int i;
-  pagmo::algorithm::sga algo=pagmo::algorithm::sga(GA_ITERATIONS_NUM);
+  pagmo::algorithm::birmingham_ga algo=pagmo::algorithm::birmingham_ga(GA_ITERATIONS_NUM);
   cga prob = cga(atoms_cnt);
   pagmo::archipelago arch = pagmo::archipelago(algo, prob, 1, 20);
   pagmo::decision_vector init_x(atoms_cnt*3);

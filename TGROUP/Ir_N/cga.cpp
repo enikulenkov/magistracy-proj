@@ -6,6 +6,7 @@
 #include <string>
 
 #include <pagmo/pagmo.h>
+//#include <pagmo.h>
 #include "cga.h"
 
 #define  COORDS_CNT  3
