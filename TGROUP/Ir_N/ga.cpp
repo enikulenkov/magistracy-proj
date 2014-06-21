@@ -3,10 +3,10 @@
 
 #include <pagmo/pagmo.h>
 //#include <pagmo.h>
-#include "cga.h"
+#include "sutton_chen_pot.h"
 #include "ga_utils.h"
 
-#define GA_ITERATIONS_NUM  10000
+#define GA_ITERATIONS_NUM  100
 
 double Clength=0.529177;   //http://en.wikipedia.org/wiki/Bohr_radius
 double g_a0 = 3.8344/Clength; /* Lattice constant. http://en.wikipedia.org/wiki/Lattice_constant */
@@ -15,10 +15,14 @@ void do_work(double *init_coords, int atoms_cnt, double *res_coords, double *min
 {
   int i;
   pagmo::algorithm::birmingham_ga algo=pagmo::algorithm::birmingham_ga(GA_ITERATIONS_NUM);
-  cga prob = cga(atoms_cnt);
-  pagmo::archipelago arch = pagmo::archipelago(algo, prob, 1, 20);
+  sutton_chen_pot prob = sutton_chen_pot(atoms_cnt);
+  pagmo::archipelago arch = pagmo::archipelago(algo, prob, 1, 10);
   pagmo::decision_vector init_x(atoms_cnt*3);
   pagmo::decision_vector best_decision_vec;
+
+  /* TODO: better bounds */
+  prob.set_lb(-120.0);
+  prob.set_ub(120.0);
 
   for (i = 0; i < atoms_cnt*3; i++)
   {
@@ -28,8 +32,9 @@ void do_work(double *init_coords, int atoms_cnt, double *res_coords, double *min
   /* Set initial decision vector for all individuals */
   pagmo::base_island_ptr island_copy = arch.get_island(0);
   
-  for (i=0; i < island_copy->get_size(); i+=5)
+  for (i=0; i < island_copy->get_size(); i++)
   {
+    //algo.randomize_cluster(init_x);
     island_copy->set_x(i, init_x);
   }
 
@@ -60,6 +65,7 @@ int main(int argc, char *argv[])
   char *in_file;
   char *out_file;
   char out_fname[] = "out.cml";
+  char out_fname_orig[] = "out_orig.cml";
   int i;
 
   if (argc < 3)
@@ -80,6 +86,8 @@ int main(int argc, char *argv[])
   }
 
   DBG_LOG("Loaded %d atoms' coordinates\n", total_atoms_cnt);
+
+  write_output(out_fname_orig, init_coords, total_atoms_cnt);
 
   res = (double *)malloc(total_atoms_cnt * 3 * sizeof(double));
 

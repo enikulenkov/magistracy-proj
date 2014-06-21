@@ -1,5 +1,5 @@
-#ifndef CGA_H
-#define CGA_H 1
+#ifndef SUTTON_CHEN_POT_H
+#define SUTTON_CHEN_POT_H 1
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <string>
@@ -7,13 +7,14 @@
 #include <pagmo/pagmo.h>
 //#include <pagmo.h>
 
-class cga : public pagmo::problem::base
+class sutton_chen_pot : public pagmo::problem::base
 {
 	public:
-		cga(int=1);
+		sutton_chen_pot(int=1);
 		pagmo::problem::base_ptr clone() const;
 		std::string get_name() const;
     void objfun_impl_test(pagmo::fitness_vector &, const pagmo::decision_vector &) const;
+    void d_objfun(const double *vec, int vec_size, double *df) const;
 	protected:
 		void objfun_impl(pagmo::fitness_vector &, const pagmo::decision_vector &) const;
 	private:
@@ -25,6 +26,6 @@ class cga : public pagmo::problem::base
 		}
 };
 
-BOOST_CLASS_EXPORT_KEY(cga);
+BOOST_CLASS_EXPORT_KEY(sutton_chen_pot);
 
-#endif /* CGA_H */
+#endif /* SUTTON_CHEN_POT_H */

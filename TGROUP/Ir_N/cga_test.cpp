@@ -3,7 +3,7 @@
 #include <pagmo/pagmo.h>
 #include <gtest/gtest.h>
 #include "ga_utils.h"
-#include "cga.h"
+#include "sutton_chen_pot.h"
 
 double Clength=0.529177;   //http://en.wikipedia.org/wiki/Bohr_radius
 double g_a0 = 3.8344/Clength; /* Lattice constant. http://en.wikipedia.org/wiki/Lattice_constant */
@@ -25,7 +25,7 @@ TEST(PotentialEnergy, SimpleTest3)
     x[i] = coords[i];
   }
 
-  cga prob = cga(atoms_cnt);
+  sutton_chen_pot prob = sutton_chen_pot(atoms_cnt);
   prob.objfun_impl_test(f, x);
 
   EXPECT_DOUBLE_EQ(-10.380928756912276, f[0]);
@@ -48,7 +48,7 @@ TEST(PotentialEnergy, SimpleTest50)
     x[i] = g_a0 * coords[i];
   }
 
-  cga prob = cga(atoms_cnt);
+  sutton_chen_pot prob = sutton_chen_pot(atoms_cnt);
   prob.objfun_impl_test(f, x);
 
   EXPECT_DOUBLE_EQ(-10.299435778260022, f[0]);
