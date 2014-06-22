@@ -19,7 +19,7 @@ $(BIN1): SC_QDM_N.f90 $(OBJS0)
 #INCPATH+=-I/usr/include/openbabel-2.0 -I$(PAGMO_PATH)/src
 INCPATH+=-I/usr/include/openbabel-2.0
 
-SRCS2 = ga.cpp sutton_chen_pot.cpp ga_utils.cpp
+SRCS2 = ga.cpp sutton_chen_pot.cpp ga_utils.cpp ini.cpp
 OBJS2 = ${SRCS2:.cpp=.o}
 
 #LDFLAGS_USER =-L$(PAGMO_PATH)/src -lpagmo -lboost_serialization -lboost_system -lboost_thread -lboost_python -lpthread -lopenbabel
@@ -33,5 +33,17 @@ OBJS3 = ${SRCS3:.cpp=.o}
 
 cga_test: $(OBJS3)
 	g++ -o $@ $+ $(LDFLAGS) $(LDFLAGS_USER) -lgtest 
+
+SRCS4 = cga_deriv_test.cpp sutton_chen_pot.cpp ga_utils.cpp
+OBJS4 = ${SRCS4:.cpp=.o}
+
+cga_deriv_test: $(OBJS4)
+	g++ -o $@ $+ $(LDFLAGS) $(LDFLAGS_USER) -lgtest
+
+SRCS5 = visualize_cluster.cpp ga_utils.cpp
+OBJS5 = ${SRCS5:.cpp=.o}
+
+visualize_cluster: $(OBJS5)
+	g++ -o $@ $+ $(LDFLAGS) -lopenbabel
 
 test: cga_test

@@ -212,8 +212,6 @@ int main(int argc, char *argv[])
   double min;
   char *in_file;
   char *out_file;
-  char out_fname[] = "out.cml";
-  char out_fname_orig[] = "out_orig.cml";
   int i;
 
   if (argc < 3)
@@ -240,13 +238,9 @@ int main(int argc, char *argv[])
 
   DBG_LOG("Loaded %d atoms' coordinates\n", total_atoms_cnt);
 
-  write_output(out_fname_orig, init_coords, total_atoms_cnt);
-
   res = (double *)malloc(total_atoms_cnt * 3 * sizeof(double));
 
   do_work(init_coords, total_atoms_cnt, res, &min);
-
-  write_output(out_fname, res, total_atoms_cnt);
 
   for (i=0; i < total_atoms_cnt*3; i++)
   {
