@@ -36,20 +36,37 @@ pagmo::problem::base_ptr sutton_chen_pot::clone() const
 void sutton_chen_pot::d_objfun(const double *vec, int vec_size, double *df) const
 {
   const int atoms_cnt = vec_size/COORDS_CNT;
-  double *pair_potentials;
   double *ro;
-  double *dist_squared;
-  double *coord_sub;
+  double *fp;
+  double *sp;
   double ro_sum = 0;
-  pair_potentials = (double *)malloc(atoms_cnt * sizeof(double));
   ro = (double *)malloc(atoms_cnt*sizeof(double));
-  dist_squared = (double *)malloc(atoms_cnt*sizeof(double));
-  coord_sub = (double *)malloc(vec_size * sizeof(double));
+  fp = (double *)malloc(vec_size * 3 * sizeof(double));
+  sp = (double *)malloc(vec_size * 3 * sizeof(double));
 
-  memset(pair_potentials, 0, atoms_cnt*sizeof(double));
   memset(ro, 0, atoms_cnt*sizeof(double));
-  memset(dist_squared, 0, atoms_cnt*sizeof(double));
-  memset(coord_sub, 0, vec_size*sizeof(double));
+  memset(fp, 0, vec_size*3*sizeof(double));
+  memset(sp, 0, vec_size*3*sizeof(double));
+
+  /* Calculate sums of ro */
+  for (int k = 0; k < atoms_cnt; k++)
+  {
+    for (int j = k+1; j < atoms_cnt; j++)
+    {
+      double dist = sqrt(SQR(vec[k*COORDS_CNT] - vec[j*COORDS_CNT]) +
+                        SQR(vec[k*COORDS_CNT+1] - vec[j*COORDS_CNT+1]) +
+                        SQR(vec[k*COORDS_CNT+2] - vec[j*COORDS_CNT+2]));
+      double a_dist = A_PARAM / dist;
+      //double dist_pow_n = pow(a_dist, N_PARAM);
+      double dist_pow_m = pow(a_dist, M_PARAM);
+      //pair_potentials[k] += dist_pow_n;
+      //pair_potentials[j] += dist_pow_n;
+      ro[k] += dist_pow_m;
+      ro[j] += dist_pow_m;
+      //dist_squared[k] += dist*dist;
+      //dist_squared[j] += dist*dist;
+    }
+  }
 
   for (int k = 0; k < atoms_cnt; k++)
   {
@@ -61,43 +78,31 @@ void sutton_chen_pot::d_objfun(const double *vec, int vec_size, double *df) cons
       double a_dist = A_PARAM / dist;
       double dist_pow_n = pow(a_dist, N_PARAM);
       double dist_pow_m = pow(a_dist, M_PARAM);
-      pair_potentials[k] += dist_pow_n;
-      pair_potentials[j] += dist_pow_n;
-      ro[k] += dist_pow_m;
-      ro[j] += dist_pow_m;
-      dist_squared[k] += dist*dist;
-      dist_squared[j] += dist*dist;
 
       for (int i = 0; i < COORDS_CNT; i++)
       {
-        coord_sub[k*COORDS_CNT+i] += coord_sub[j*COORDS_CNT+i] - vec[k*COORDS_CNT+i];
-        coord_sub[j*COORDS_CNT+i] += coord_sub[k*COORDS_CNT+i] - vec[j*COORDS_CNT+i];
+        double diff =  vec[j*COORDS_CNT+i] - vec[k*COORDS_CNT+i];
+        double tmp1 = diff/(dist*dist) * dist_pow_n;
+        double tmp2 = diff/(dist*dist) * (pow(ro[k], -0.5) + pow(ro[j], -0.5)) * dist_pow_m;
+        fp[k*COORDS_CNT+i] += tmp1;
+        fp[j*COORDS_CNT+i] += -tmp1;
+        sp[k*COORDS_CNT+i] += tmp2;
+        sp[j*COORDS_CNT+i] += -tmp2;
       }
     }
   }
 
-  for (int i =0 ; i < atoms_cnt; i++)
-  {
-    ro_sum += ro[i];
-  }
-
-
   for (int k = 0; k < atoms_cnt ; k++)
   {
-    double pref;
-    
-    pref = EPS_PARAM*((-1)*(N_PARAM)*pair_potentials[k] + C_PARAM*M_PARAM*0.5*ro_sum*ro[k])/dist_squared[k];
-
     for (int i = 0; i < COORDS_CNT; i++)
     {
-      df[k*COORDS_CNT+i] = pref*coord_sub[k*COORDS_CNT+i];
+      df[k*COORDS_CNT+i] = (-1)*EPS_PARAM*((-1)*(N_PARAM)*fp[k*COORDS_CNT+i] + C_PARAM*M_PARAM*0.5*sp[k*COORDS_CNT+i]);
     }
   }
 
-  free(pair_potentials);
   free(ro);
-  free(dist_squared);
-  free(coord_sub);
+  free(fp);
+  free(sp);
 }
 
 
