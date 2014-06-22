@@ -229,6 +229,7 @@
   202 continue
   write(nf1,201)
   write(*  ,201)
+  call write_output(out_fname, R00, na)
   201 format(//' Self-consistency is not reached...')
   stop
 
@@ -285,7 +286,7 @@
 
 ! Файл для сохранения Ekin и Epot
   write(nf5,776)(Ekin(i),Epot(i),i=1,itfin)
-  776 format(1x,f15.5,3x,f15.5)
+  776 format(1x,f15.10,3x,f15.10)
 
   777 tm1=TimMin()-tm0
 
