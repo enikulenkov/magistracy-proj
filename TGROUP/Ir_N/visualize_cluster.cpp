@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
   write_output(out_file, coords, total_atoms_cnt);
 
-  printf("Result is written to %s", out_file);
+  printf("Result is written to %s\n", out_file);
 
   free(coords);
 
