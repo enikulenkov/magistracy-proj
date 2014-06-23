@@ -229,7 +229,15 @@
   202 continue
   write(nf1,201)
   write(*  ,201)
+
+  do i=1,na
+   do m=1,3
+     R00((i-1)*3+m)=R(m,i)/a0
+   enddo
+  enddo
+
   call write_output(out_fname, R00, na)
+
   201 format(//' Self-consistency is not reached...')
   stop
 
@@ -260,6 +268,11 @@
    8307 format(1x,i3,')',3f12.5,3x,3f12.5)
   enddo
 
+  do i=1,na
+   do m=1,3
+     R00((i-1)*3+m)=R00((i-1)*3+m)/a0
+   enddo
+  enddo
   call write_output(out_fname, R00, na)
 
   300 continue
