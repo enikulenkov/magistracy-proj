@@ -59,13 +59,13 @@ extern "C" int write_output_(char *out_filename, double *A, int *n)
     mol.AddAtom(atom);
   }
 
-  for (i=0; i < *n; i++)
-  {
-    for (int j=i; j < *n; j++)
-    {
-      mol.AddBond(i+1, j+1, 0);
-    }
-  }
+  //for (i=0; i < *n; i++)
+  //{
+    //for (int j=i; j < *n; j++)
+    //{
+      //mol.AddBond(i+1, j+1, 0);
+    //}
+  //}
 
   ob.Write(&mol);
   ob.CloseOutFile();
