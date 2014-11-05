@@ -60,7 +60,7 @@ LINK_BINARY_GPU = $(CC) -o $@ $+ $(LDFLAGS_GPU)
 bldall: all
 
 clean:
-	rm -f *.o $(BINS)
+	rm -f *.o $(BINS) *.ene *.res *.xyz *.ang
 
 clobber: clean
 	rm -f tags TAGS

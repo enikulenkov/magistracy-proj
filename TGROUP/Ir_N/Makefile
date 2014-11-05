@@ -6,7 +6,10 @@ FORTRAN_CCFLAGS = -g -fdollar-ok
 
 BIN1 = sc_qdm_n
 BIN2 = ga
-BINS = $(BIN1) $(BIN2)
+BIN3 = cga_test
+BIN4 = cga_deriv_test
+BIN5 = visualize_cluster
+BINS = $(BIN1) $(BIN2) $(BIN3) $(BIN4) $(BIN5)
 
 all: $(BIN1) $(BIN2)
 
@@ -31,19 +34,19 @@ $(BIN2): $(OBJS2)
 SRCS3 = cga_test.cpp sutton_chen_pot.cpp ga_utils.cpp
 OBJS3 = ${SRCS3:.cpp=.o}
 
-cga_test: $(OBJS3)
+$(BIN3): $(OBJS3)
 	g++ -o $@ $+ $(LDFLAGS) $(LDFLAGS_USER) -lgtest 
 
 SRCS4 = cga_deriv_test.cpp sutton_chen_pot.cpp ga_utils.cpp
 OBJS4 = ${SRCS4:.cpp=.o}
 
-cga_deriv_test: $(OBJS4)
+$(BIN4): $(OBJS4)
 	g++ -o $@ $+ $(LDFLAGS) $(LDFLAGS_USER) -lgtest
 
 SRCS5 = visualize_cluster.cpp ga_utils.cpp
 OBJS5 = ${SRCS5:.cpp=.o}
 
-visualize_cluster: $(OBJS5)
+$(BIN5): $(OBJS5)
 	g++ -o $@ $+ $(LDFLAGS) -lopenbabel
 
 test: cga_test
