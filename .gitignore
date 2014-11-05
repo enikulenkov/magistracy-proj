@@ -10,3 +10,5 @@ perf_test
 *.ene
 *.xyz
 sc_qdm_n
+__pycache__
+res
