@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 
   if (total_atoms_cnt < 0)
   {
-    DBG_LOG("Invalid input, exit...");
+    DBG_LOG("Invalid input, exit...\n");
     return 1;
   }
 

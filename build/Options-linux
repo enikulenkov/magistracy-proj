@@ -15,7 +15,7 @@ NVCCFLAGS   = -arch=sm_20 --compiler-options=-fno-exceptions -G -g
 CCFLAGS     = -g
 DEFINES     = -DDEBUG
 NVCCLDFLAGS =
-LDFLAGS     += -L$(BUILD_HOME)/lib $(UTILS_LIB) $(ALG_LIB) -lm
+LDFLAGS     += -L$(BUILD_HOME)/lib $(UTILS_LIB) -lm
 ifeq ($(USE_GPUOCELOT),1)
 LDFLAGS_GPU += -L/opt/cuda/lib -locelot
 else
