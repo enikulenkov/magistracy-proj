@@ -6,8 +6,6 @@
 #include "ga_utils.h"
 #include "ini.h"
 
-#define GA_ITERATIONS_NUM  100
-
 double Clength=0.529177;   //http://en.wikipedia.org/wiki/Bohr_radius
 double g_a0 = 3.8344/Clength; /* Lattice constant. http://en.wikipedia.org/wiki/Lattice_constant */
 
