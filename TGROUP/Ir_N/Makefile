@@ -11,7 +11,7 @@ BIN4 = cga_deriv_test
 BIN5 = visualize_cluster
 BINS = $(BIN1) $(BIN2) $(BIN3) $(BIN4) $(BIN5)
 
-all: $(BIN1) $(BIN2)
+all: $(BIN1) $(BIN2) $(BIN5)
 
 SRCS0 = ga_utils_f.cpp
 OBJS0 = ${SRCS0:.cpp=.o}
