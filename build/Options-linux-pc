@@ -7,20 +7,54 @@ CUDARTLIB_PATH = /usr/lib/x86_64-linux-gnu
 
 # internal flags
 NVCC        = nvcc
-CC          = gcc
+
+ifeq ($(USE_INTEL),1)
+	CC          = icc
+else
+	CC          = gcc
+endif
+
 FORTRAN_CC  = gfortran
-CXX         = g++
 #NVCCFLAGS   := -m32 -arch=sm_20 --compiler-options=-fno-exceptions
-NVCCFLAGS   = -arch=sm_20 --compiler-options=-fno-exceptions -G -g
-CCFLAGS     = -g
+ifeq ($(DEBUG),1)
+	NVCCFLAGS   = -arch=sm_20 --compiler-options=-fno-exceptions -G -g
+else
+	NVCCFLAGS   = -arch=sm_20 --compiler-options=-fno-exceptions -O3
+endif
+
+ifeq ($(DEBUG),1)
+	CCFLAGS     = -g
+else
+	CCFLAGS     = -O3
+endif
+
+ifeq ($(PROFILE),1)
+	CCFLAGS     += -pg
+endif
+
+ifeq ($(DEBUG), 1)
 DEFINES     = -DDEBUG
+endif
+
 NVCCLDFLAGS =
+
+ifeq ($(USE_INTEL),1)
+	BLAS_LIBS = -lmkl_rt
+else
+	BLAS_LIBS = -lblas
+endif
+
 LDFLAGS     += -L$(BUILD_HOME)/lib $(UTILS_LIB) $(ALG_LIB) -lm
 ifeq ($(USE_GPUOCELOT),1)
-LDFLAGS_GPU += -L/opt/cuda/lib -locelot
+LDFLAGS_CUDA     += -L/opt/cuda/lib -locelot
 else
-LDFLAGS_GPU += -L$(CUDALIB_PATH) -L$(CUDARTLIB_PATH) -lcudart -lcuda
+LDFLAGS_CUDA     += -L$(CUDALIB_PATH) -L$(CUDARTLIB_PATH) -lcudart -lcuda
 endif
+
+ifeq ($(PROFILE),1)
+	LDFLAGS   += -pg
+endif
+
 INCPATH     += -I$(BUILD_HOME)/include
 
 ################################################################################
@@ -29,9 +63,6 @@ INCPATH     += -I$(BUILD_HOME)/include
 %.o : %.c
 	$(CC) -c $(DEFINES) $(INCPATH) $(CCFLAGS) -o $@ $<
 
-%.o : %.cpp
-	$(CXX) -c $(DEFINES) $(INCPATH) $(CCFLAGS) -o $@ $<
-
 %.w.o : %.c
 	$(CC) -c $(DEFINES) $(INCPATH) $(CCFLAGS) -o $@ $<
 
@@ -39,7 +70,7 @@ INCPATH     += -I$(BUILD_HOME)/include
 	$(NVCC) $(NVCCFLAGS) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
 %.o: %.f90
-	$(FORTRAN_CC) $(FORTRAN_CCFLAGS) $(LDFLAGS) -o $@ $+
+	$(FORTRAN_CC) $(LDFLAGS) -o $@ $+
 
 ################################################################################
 # Lib names
@@ -51,9 +82,8 @@ ALG_LIB = $(BUILD_HOME)/lib/libalgs.a
 
 MAKE        = make -e
 MAKE_LIB    = ar r $@ $^
-LINK_BINARY = $(CC) -o $@ $+ $(LDFLAGS)
-LINK_BINARY_CXX = $(CXX) -o $@ $+ $(LDFLAGS) $(LDFLAGS_USER)
-LINK_BINARY_GPU = $(CC) -o $@ $+ $(LDFLAGS_GPU)
+LINK_BINARY = $(CC) -o $@ $< $(LDFLAGS)
+LINK_BINARY_CUDA = $(CC) -o $@ $< $(LDFLAGS) $(LDFLAGS_CUDA)
 
 ################################################################################
 # Common targets
